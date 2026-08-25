@@ -67,25 +67,34 @@ const seedAdminUser = async () => {
 connectDB();
 
 app.use(cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS blocked origin: ${origin}`));
-      }
-    },
-    credentials: true
+  origin: (origin, callback) => {
+    const allowed = [
+      "http://manvar-foundation-web-2026.s3-website.ap-south-1.amazonaws.com",
+      "https://www.manvarfoundation.org.in",
+      "https://manvarfoundation.org.in",
+      "https://api.manvarfoundation.org.in"
+    ];
+
+    if (!origin || allowed.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked origin: ${origin}`));
+    }
+  },
+  credentials: true
 }));
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const csrfProtection = csrf({ 
+const csrfProtection = csrf({
     cookie: {
         httpOnly: true,
-        secure: isProduction,
+        secure: false,
         sameSite: 'lax'
-    } 
+    }
 });
 
 const uploadsPath = path.join(__dirname, 'uploads');
