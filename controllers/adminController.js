@@ -8,6 +8,10 @@ const Event = require('../models/Event');
 const Media = require('../models/Media');
 const ImpactStat = require('../models/ImpactStat');
 const Banner = require('../models/Banner');
+const Comment = require('../models/Comment');
+const sequelize = require('../config/db');
+const fs = require('fs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 
 const uploadedFileUrl = (file) => {
@@ -77,6 +81,51 @@ exports.createMediaCoverage = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+const removeUploadedFile = async (fileUrl) => {
+  const normalizedUrl = String(fileUrl || '').replace(/\\/g, '/');
+  const match = normalizedUrl.match(/^\/?uploads\/([^/]+)$/);
+  if (!match) return;
+
+  try {
+    await fs.promises.unlink(path.join(__dirname, '..', 'uploads', match[1]));
+  } catch (error) {
+    if (error.code !== 'ENOENT') console.warn('Unable to remove uploaded file:', error.message);
+  }
+};
+
+const deleteContent = (model, fileField, commentModel) => async (req, res) => {
+  try {
+    const deletedItem = await sequelize.transaction(async (transaction) => {
+      const item = await model.findByPk(req.params.id, { transaction });
+      if (!item) return null;
+
+      if (commentModel) {
+        await Comment.destroy({
+          where: { refId: item.id, refModel: commentModel },
+          transaction,
+        });
+      }
+
+      const fileUrl = item[fileField];
+      await item.destroy({ transaction });
+      return { fileUrl };
+    });
+
+    if (deletedItem === null) {
+      return res.status(404).json({ success: false, error: 'Post not found.' });
+    }
+
+    await removeUploadedFile(deletedItem.fileUrl);
+    return res.json({ success: true, message: 'Post deleted successfully.' });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+exports.deleteSuccessStory = deleteContent(Story, 'url', 'Story');
+exports.deleteEvent = deleteContent(Event, 'image', 'Event');
+exports.deleteMediaCoverage = deleteContent(Media, 'image');
 
 // --- Settings Management ---
 exports.updateImpactStats = async (req, res) => {

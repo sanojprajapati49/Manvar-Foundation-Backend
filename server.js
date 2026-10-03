@@ -96,7 +96,10 @@ const csrfProtection = csrf({
 });
 
 const uploadsPath = path.join(__dirname, 'uploads');
-app.use('/uploads', express.static(uploadsPath));
+app.use('/uploads', express.static(uploadsPath, {
+  maxAge: '30d',
+  immutable: true
+}));
 
 // Serve frontend from the same origin as the API. This keeps the CSRF cookie
 // and token on the same site, avoiding Invalid CSRF Token errors in browsers.

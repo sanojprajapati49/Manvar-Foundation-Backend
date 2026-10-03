@@ -65,6 +65,9 @@ router.post('/admin/login', adminController.adminLogin);
 router.post('/admin/success-stories', protect, admin, upload.single('media'), adminController.createSuccessStory);
 router.post('/admin/events', protect, admin, upload.single('image'), adminController.createEvent);
 router.post('/admin/media-coverage', protect, admin, upload.single('image'), adminController.createMediaCoverage);
+router.delete('/admin/success-stories/:id', protect, admin, adminController.deleteSuccessStory);
+router.delete('/admin/events/:id', protect, admin, adminController.deleteEvent);
+router.delete('/admin/media-coverage/:id', protect, admin, adminController.deleteMediaCoverage);
 
 // Settings Management (Admin)
 router.post('/admin/update-stats', protect, admin, adminController.updateImpactStats);
