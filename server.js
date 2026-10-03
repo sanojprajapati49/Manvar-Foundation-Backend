@@ -72,7 +72,18 @@ connectDB();
 
 app.use(cors({
   origin: (origin, callback) => {
+<<<<<<< HEAD
     if (!origin || allowedOrigins.includes(origin)) {
+=======
+    const allowed = [
+      "http://manvar-foundation-web-2026.s3-website.ap-south-1.amazonaws.com",
+      "https://www.manvarfoundation.org.in",
+      "https://manvarfoundation.org.in",
+      "https://api.manvarfoundation.org.in"
+    ];
+
+    if (!origin || allowed.includes(origin)) {
+>>>>>>> cbc5c9a (Update server configuration)
       callback(null, true);
     } else {
       callback(new Error(`CORS blocked origin: ${origin}`));
@@ -134,3 +145,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.info(`Backend server is running on port ${PORT}.`);
 });
+
