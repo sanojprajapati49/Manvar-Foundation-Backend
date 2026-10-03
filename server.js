@@ -20,6 +20,8 @@ const allowedOrigins = [
   'https://manvarfoundation.org.in',
   'https://api.manvarfoundation.org.in',
   'http://manvar-foundation-web-2026.s3-website.ap-south-1.amazonaws.com',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
   'http://localhost:5500',
   'http://127.0.0.1:5500'
 ].filter(Boolean);
