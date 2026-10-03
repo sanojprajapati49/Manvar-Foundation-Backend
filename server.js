@@ -17,7 +17,11 @@ const allowedOrigins = [
     .split(',')
     .map((origin) => origin.trim()),
   productionOrigin,
-  'https://manvarfoundation.org.in'
+  'https://manvarfoundation.org.in',
+  'https://api.manvarfoundation.org.in',
+  'http://manvar-foundation-web-2026.s3-website.ap-south-1.amazonaws.com',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500'
 ].filter(Boolean);
 
 const connectDB = async () => {
@@ -68,14 +72,7 @@ connectDB();
 
 app.use(cors({
   origin: (origin, callback) => {
-    const allowed = [
-      "http://manvar-foundation-web-2026.s3-website.ap-south-1.amazonaws.com",
-      "https://www.manvarfoundation.org.in",
-      "https://manvarfoundation.org.in",
-      "https://api.manvarfoundation.org.in"
-    ];
-
-    if (!origin || allowed.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error(`CORS blocked origin: ${origin}`));
